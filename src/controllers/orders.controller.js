@@ -2,7 +2,6 @@ import moment from "moment/moment.js";
 import { pickCakeById } from "../repositories/cakes.repository.js";
 import { pickClientById } from "../repositories/clients.repository.js";
 import { insertOrder, pickOrders, verifyOrderId } from "../repositories/orders.repository.js";
-import { db } from "../database/database.connection.js";
 
 export async function postOrder(req, res) {
     const { clientId, cakeId, quantity, totalPrice } = req.body 
@@ -17,7 +16,6 @@ export async function postOrder(req, res) {
 
         res.sendStatus(201)
     } catch (err) {
-        console.log(err)
         res.status(500).send(err);
     }
 }
@@ -40,31 +38,30 @@ export async function getOrders(req, res) {
 
         if (req.body.date) {
             const ordersByDate = ordersOrganized.filter(order => order.createdAt.startsWith(req.body.date));
-            return res.status(200).send(ordersByDate);
+            return res.status(404).send(ordersByDate);
         }
 
         res.status(200).send(ordersOrganized)
     } catch (err) {
-        console.log(err)
         res.status(500).send(err);
     }
 }
 
 export async function getOrdersById(req, res) {
-    const { id } = req.params;
+    const { orderId } = req.params;
 
     try {
-        const orderExists = await verifyOrderId(id);
+        const orderExists = await verifyOrderId(orderId);
         if (!orderExists.rows[0]) return res.sendStatus(404);
 
         const orders = await pickOrders();
 
-        const ordersOrganizedByID = []
+        const ordersOrganizedById = []
 
         orders.rows.map(order => {
-            if(Number(id) === order.order_id) {
+            if(Number(orderId) === order.order_id) {
                 const formattedDate = moment(order.createdAt).format('YYYY-MM-DD HH:mm');
-                ordersOrganizedByID.push({
+                ordersOrganizedById.push({
                 clients: {id: order.client_id, name: order.client_name, 
                     adress: order.adress, phone: order.phone},
                 cake: {id: order.cake_id, name: order.cake_name, price: order.price, 
@@ -74,9 +71,9 @@ export async function getOrdersById(req, res) {
             }
         })
 
-        res.status(200).send(ordersOrganizedByID)
+        res.status(200).send(ordersOrganizedById)
     } catch (err) {
-        console.log(err)
         res.status(500).send(err);
     }
 }
+

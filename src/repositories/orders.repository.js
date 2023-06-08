@@ -5,16 +5,16 @@ export async function insertOrder (clientId, cakeId, quantity, totalPrice) {
     return db.query(`
     INSERT INTO orders
     ("clientId", "cakeId", quantity, "totalPrice")
-    VALUES ($1, $2, $3, $4)
-    `, [clientId, cakeId, quantity, totalPrice]);
+    VALUES ($1, $2, $3, $4);`, 
+    [clientId, cakeId, quantity, totalPrice]);
 };
 
-export async function verifyOrderId (id) {
+export async function verifyOrderId (orderId) {
     return db.query(`
     SELECT *
     FROM orders
     WHERE id = $1`, 
-    [id]);
+    [orderId]);
 };
 
 export async function pickOrders() {

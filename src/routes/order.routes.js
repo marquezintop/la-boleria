@@ -8,6 +8,6 @@ const ordersRouter = Router();
 
 ordersRouter.post("/orders", validateSchema(orderSchema), postOrder);
 ordersRouter.get("/orders", validateSchema(dateSchema), getOrders);
-ordersRouter.get("/orders/:id", getOrdersById);
+ordersRouter.get("/orders/:orderId", getOrdersById);
 
 export default ordersRouter;
